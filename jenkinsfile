@@ -1,0 +1,26 @@
+pipeline {
+  agent any
+  stages {
+    stage ('stash') {
+       node { label  'one' }
+       steps {
+           script {
+               sh "echo 1 > myfile.txt" // runs in $WORKSPACE, creates $WORKSPACE/myfile.txt
+               stash name: "my_stash", includes: "myfile.txt" // relative to $WORKSPACE
+           }
+       }
+    }
+
+    stage ('unstash') {
+       node { label  'two' }
+       steps {
+           script {
+               unstash name: "my_stash"  // runs in $WORKSPACE, creates $WORKSPACE/myfile.txt
+               sh "cat ./myfile.txt"
+           }
+       }
+    }
+  
+  
+  }
+}
